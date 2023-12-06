@@ -5,6 +5,7 @@
 //  Created by Neto Lobo on 05/12/23.
 //
 import CodeScanner
+import UserNotifications
 import SwiftUI
 
 struct ProspectsView: View {
@@ -26,18 +27,42 @@ struct ProspectsView: View {
                     Text(prospect.emailAddres)
                         .foregroundStyle(.secondary)
                 }
-            }
-                .navigationTitle(title)
-                .toolbar{
-                    Button {
-                        isShowingScanner = true
-                    } label: {
-                        Label("Scan", systemImage: "qrcode.viewfinder")
+                .swipeActions {
+                    if prospect.isContacted {
+                        Button {
+                            prospects.toggle(prospect)
+                        } label: {
+                            Label("Mar Uncontacted", systemImage: "person.crop.circle.badge.xmark")
+                        }
+                        .tint(.blue)
+                    } else {
+                        Button {
+                            prospects.toggle(prospect)
+                        } label: {
+                            Label("Mar Contacted", systemImage: "person.crop.circle.fill.badge.checkmark")
+                        }
+                        .tint(.green)
+                        
+                        Button {
+                            addNotification(for: prospect)
+                        } label: {
+                            Label("Remind Me", systemImage: "bell")
+                        }
+                        .tint(.orange)
                     }
                 }
-                .sheet(isPresented: $isShowingScanner, content: {
-                    CodeScannerView(codeTypes: [.qr], simulatedData: "Desilio Neto\ndesilio@gmail.com", completion: handleScan)
-                })
+            }
+            .navigationTitle(title)
+            .toolbar{
+                Button {
+                    isShowingScanner = true
+                } label: {
+                    Label("Scan", systemImage: "qrcode.viewfinder")
+                }
+            }
+            .sheet(isPresented: $isShowingScanner, content: {
+                CodeScannerView(codeTypes: [.qr], simulatedData: "Desilio Neto\ndesilio@gmail.com", completion: handleScan)
+            })
         }
         
     }
@@ -74,10 +99,45 @@ struct ProspectsView: View {
             let person = Prospect()
             person.name = details[0]
             person.emailAddres = details[1]
-            prospects.people.append(person)
+            prospects.addProspect(person)
         case .failure(let error):
             print("Scanning failed \(error.localizedDescription)")
         }
+    }
+    
+    func addNotification(for prospect: Prospect) {
+        let center = UNUserNotificationCenter.current()
+        
+        let addRequest = {
+            let content = UNMutableNotificationContent()
+            content.title = "Contact \(prospect.name)"
+            content.subtitle = prospect.emailAddres
+            content.sound = UNNotificationSound.default
+            
+            var dateComponents = DateComponents()
+            dateComponents.hour = 9
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+            
+//            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+            
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            center.add(request)
+        }
+        
+        center.getNotificationSettings { settings in
+            if settings.authorizationStatus == .authorized {
+                addRequest()
+            } else {
+                center.requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                    if success {
+                        addRequest()
+                    } else {
+                        print("D'oh!")
+                    }
+                }
+            }
+        }
+        
     }
 }
 
