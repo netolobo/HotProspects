@@ -8,20 +8,27 @@
 import SwiftUI
 
 @Observable
-class Prospect: Identifiable, Codable {
+class Prospect: Identifiable, Codable, Equatable {
+    
     var id = UUID()
     var name = "Anonymous"
     var emailAddres = ""
+    var timestamp = Date()
     fileprivate (set) var isContacted = false
+    
+    static func == (lhs: Prospect, rhs: Prospect) -> Bool {
+        lhs.emailAddres < rhs.emailAddres
+    }
 }
 
 @Observable
 class Prospects {
     private (set) var people: [Prospect]
-    let saveKey = "SaveData"
+//    let saveKey = "SaveData"
+    let savePath = FileManager.documentsDirectory.appendingPathComponent("SaveData")
     
     init() {
-        if let data = UserDefaults.standard.data(forKey: saveKey) {
+        if let data = try? Data(contentsOf: savePath) {
             if let decoded = try? JSONDecoder().decode([Prospect].self, from: data) {
                 people = decoded
                 return
@@ -31,8 +38,11 @@ class Prospects {
     }
     
     private func save() {
-        if let encoded = try? JSONEncoder().encode(people) {
-            UserDefaults.standard.set(encoded, forKey: saveKey)
+        do {
+            let data = try JSONEncoder().encode(people)
+            try data.write(to: savePath, options: [.atomicWrite, .completeFileProtection])
+        } catch {
+            print("Unable to save data.")
         }
     }
     

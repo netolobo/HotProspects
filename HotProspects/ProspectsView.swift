@@ -13,19 +13,31 @@ struct ProspectsView: View {
         case none, contacted, uncontacted
     }
     
+    enum SortOrder {
+        case name, recent
+    }
+    
     @Environment(Prospects.self) var prospects: Prospects
     @State private var isShowingScanner = false
+    @State private var isShowingConfirmationDialog = false
+    @State private var order = SortOrder.recent
     
     let filter: FilterType
+    
     
     var body: some View {
         NavigationStack {
             List(filteredProspects) { prospect in
-                VStack(alignment: .leading) {
-                    Text(prospect.name)
-                        .font(.headline)
-                    Text(prospect.emailAddres)
-                        .foregroundStyle(.secondary)
+                HStack {
+                    Image(systemName: prospect.isContacted ?
+                          "person.crop.circle.fill.badge.checkmark" : "person.crop.circle.badge.xmark")
+                    
+                    VStack(alignment: .leading) {
+                        Text(prospect.name)
+                            .font(.headline)
+                        Text(prospect.emailAddres)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 .swipeActions {
                     if prospect.isContacted {
@@ -53,19 +65,42 @@ struct ProspectsView: View {
                 }
             }
             .navigationTitle(title)
+            .onAppear { loadProspects() }
+            .onChange(of: prospects.people){ loadProspects() }
             .toolbar{
-                Button {
-                    isShowingScanner = true
-                } label: {
-                    Label("Scan", systemImage: "qrcode.viewfinder")
+                ToolbarItem {
+                    Button {
+                        isShowingScanner = true
+                    } label: {
+                        Label("Scan", systemImage: "qrcode.viewfinder")
+                    }
+                }
+                
+                ToolbarItem {
+                    Button {
+                        isShowingConfirmationDialog = true
+                    } label: {
+                        Label("Sort", systemImage: "line.3.horizontal.decrease.circle")
+                    }
                 }
             }
-            .sheet(isPresented: $isShowingScanner, content: {
+            .sheet(isPresented: $isShowingScanner) {
                 CodeScannerView(codeTypes: [.qr], simulatedData: "Desilio Neto\ndesilio@gmail.com", completion: handleScan)
-            })
-        }
-        
+            }
+            .confirmationDialog("Change the order:", isPresented: $isShowingConfirmationDialog) {
+                Button("Name") {
+                    filteredProspects = filteredProspects.sorted { $0.name < $1.name }
+                }
+                
+                Button("Most recent") {
+                    filteredProspects = filteredProspects.sorted { $0.timestamp.timeIntervalSince1970 > $1.timestamp.timeIntervalSince1970 }
+                }
+                
+                Button("Cancel", role: .cancel) {}
+            }
+        }        
     }
+    
     
     var title: String {
         switch filter {
@@ -78,14 +113,17 @@ struct ProspectsView: View {
         }
     }
     
-    var filteredProspects: [Prospect] {
+    @State var filteredProspects = [Prospect]()
+    
+    
+    func loadProspects() {
         switch filter {
         case .none:
-            return prospects.people
+            filteredProspects = prospects.people
         case .contacted:
-            return prospects.people.filter { $0.isContacted }
+            filteredProspects = prospects.people.filter { $0.isContacted }
         case .uncontacted:
-            return prospects.people.filter { !$0.isContacted}
+            filteredProspects = prospects.people.filter { !$0.isContacted}
         }
     }
     

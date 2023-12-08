@@ -16,6 +16,7 @@
 		5A9333432B20190B0094A2CF /* Prospect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9333422B20190B0094A2CF /* Prospect.swift */; };
 		5A9333462B2027210094A2CF /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 5A9333452B2027210094A2CF /* CodeScanner */; };
 		5A9333482B212BD60094A2CF /* ImageSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9333472B212BD60094A2CF /* ImageSaver.swift */; };
+		5AF4F2F82B226D2100C0D251 /* FileManager-DocumentsDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF4F2F72B226D2100C0D251 /* FileManager-DocumentsDirectory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		5A9333402B2014900094A2CF /* MeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeView.swift; sourceTree = "<group>"; };
 		5A9333422B20190B0094A2CF /* Prospect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prospect.swift; sourceTree = "<group>"; };
 		5A9333472B212BD60094A2CF /* ImageSaver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSaver.swift; sourceTree = "<group>"; };
+		5AF4F2F72B226D2100C0D251 /* FileManager-DocumentsDirectory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileManager-DocumentsDirectory.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				5A93333E2B20147C0094A2CF /* ProspectsView.swift */,
 				5A9333402B2014900094A2CF /* MeView.swift */,
 				5A9333472B212BD60094A2CF /* ImageSaver.swift */,
+				5AF4F2F72B226D2100C0D251 /* FileManager-DocumentsDirectory.swift */,
 				5A9333342B1FCFDA0094A2CF /* Assets.xcassets */,
 				5A9333362B1FCFDA0094A2CF /* Preview Content */,
 				5A9333422B20190B0094A2CF /* Prospect.swift */,
@@ -158,6 +161,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5A9333412B2014900094A2CF /* MeView.swift in Sources */,
+				5AF4F2F82B226D2100C0D251 /* FileManager-DocumentsDirectory.swift in Sources */,
 				5A9333482B212BD60094A2CF /* ImageSaver.swift in Sources */,
 				5A9333432B20190B0094A2CF /* Prospect.swift in Sources */,
 				5A93333F2B20147C0094A2CF /* ProspectsView.swift in Sources */,
